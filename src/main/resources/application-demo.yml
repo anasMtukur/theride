@@ -1,0 +1,68 @@
+host:
+  name: app:9191  # Use the service name "app" for Docker Compose
+  scheme: http
+
+server:
+  contextPath: /v1
+  port: 9191
+  ssl:
+    enabled: false
+
+spring:
+  main:
+    allow-bean-definition-overriding: true
+  servlet:
+    multipart:
+      max-file-size: 500MB
+      max-request-size: 500MB
+  jpa:
+    properties:
+      hibernate:
+        show-sql: true
+        default-schema: theride
+        generate-statistics: false
+        order-inserts: true
+        jdbc:
+          batch-size: 10
+  datasource:
+    type: com.zaxxer.hikari.HikariDataSource
+    password: KfiwSDrL6VPP2s5
+    url: jdbc:postgresql://db:5432/theride_db?currentSchema=theride  # Use the service name "db" for Docker Compose
+    username: theride
+    hikari:
+      connection-timeout: 30000
+      idle-timeout: 30000
+      minimum-idle: 5
+      maximum-pool-size: 20
+      leak-detection-threshold: 1000
+      pool-name: DRPOOL
+      max-lifetime: 2000000
+  batch:
+    jdbc:
+      initialize-schema: always
+    job:
+      enabled: false
+  kafka:
+    bootstrap-servers: kafka:9092  # Use the service name "kafka" for Docker Compose
+    consumer:
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+  flyway:
+    locations: classpath:db/migration
+    schemas: theride
+    table: flyway_schema_history
+    baseline-on-migrate: true
+    baseline-version: 0
+
+jwt:
+  secret: Gh5k*O8MQ!0oru*z
+
+springfox:
+  documentation:
+    swagger:
+      v2:
+        path: /api-docs

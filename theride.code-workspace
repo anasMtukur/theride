@@ -1,0 +1,14 @@
+{
+	"folders": [
+		{
+			"path": "."
+		},
+		{
+			"path": "../deliveryt"
+		},
+		{
+			"path": "../Uber-Backend-API-master"
+		}
+	],
+	"settings": {}
+}
