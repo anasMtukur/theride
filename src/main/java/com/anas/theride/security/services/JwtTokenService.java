@@ -5,9 +5,14 @@ import java.util.Date;
 import java.util.Map;
 import java.util.function.Function;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
+
+import com.anas.theride.user.EndUser;
+import com.anas.theride.user.EndUserRepository;
+
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -21,6 +26,9 @@ public class JwtTokenService implements Serializable {
 
 	@Value("${jwt.secret}")
 	private String secret;
+
+	@Autowired 
+	EndUserRepository endUserRepository;
 
 	public String getUsernameFromToken(String token) {
 		return getClaimFromToken(token, Claims::getSubject);
@@ -46,8 +54,11 @@ public class JwtTokenService implements Serializable {
 
 	public String generateToken(UserDetails userDetails) {
 		//Map<String, Object> claims = new HashMap<>();
+		EndUser user = endUserRepository.findByUsername( userDetails.getUsername() );
 		Claims claims = Jwts.claims();
 	    claims.put("authorities", userDetails.getAuthorities());
+		claims.put("fullname", user.getFullName());
+		claims.put("mobile", user.getMobile());
 	    claims.setSubject(userDetails.getUsername());
 	    claims.setExpiration(new Date( System.currentTimeMillis() + JWT_TOKEN_VALIDITY * 1000 ));
 		

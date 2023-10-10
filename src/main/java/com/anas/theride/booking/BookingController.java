@@ -31,6 +31,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.anas.theride.driver.Driver;
 import com.anas.theride.driver.DriverRepository;
 import com.anas.theride.driver.Gender;
+import com.anas.theride.exceptions.DriverRequestAlreadySentException;
 import com.anas.theride.exceptions.EntityNotFoundException;
 import com.anas.theride.lastknownlocation.LastKnownLocation;
 import com.anas.theride.lastknownlocation.LastKnownLocationRepository;
@@ -122,7 +123,7 @@ public class BookingController {
 
 		List<LastKnownLocation> drivers = null;
 
-		if( mode.equals( "booking" ) && booking.getBookingStatus().equals( BookingStatus.ASSIGNING_DRIVER ) ){
+		if( mode.equals( "passenger" ) && booking.getBookingStatus().equals( BookingStatus.ASSIGNING_DRIVER ) ){
 			BookingPoint pickup = booking.getPoints().stream()
 				.filter( point -> point.getPointType().equals( BookingPointType.PICKUP ))
 				.collect(Collectors.toList()).get(0);
@@ -215,6 +216,7 @@ public class BookingController {
 			@Valid @RequestBody FindByLocationPayload payload) throws Exception {
 		
 		String geoHash = locationService.generateGeoHash( payload.getLatitude(), payload.getLongitude() );
+		System.out.println( geoHash );
 		List<Booking> response = repository.findByGeoHashZoneAndBookingStatus( geoHash );
 		
 		return ResponseEntity.ok( response );
@@ -246,5 +248,32 @@ public class BookingController {
 		repository.saveAndFlush( booking );
 
 		return ResponseEntity.ok( booking );
+	}
+
+	@GetMapping( value="{mode}/history", produces = MediaType.APPLICATION_JSON_VALUE )
+	public ResponseEntity<List<Booking>> findHistory(
+			Principal principal,
+			@PathVariable( name = "mode", required = true ) String mode ) throws Exception {
+		EndUser requestingUser = endUserRepository.findByUsername( principal.getName() );
+
+		Optional<Driver> maybeDriver = driverRepository.findByEndUser( requestingUser );
+		Optional<Passenger> maybePassenger = passengerRepository.findByEndUser( requestingUser );
+
+
+		List<Booking> bookings = new ArrayList<Booking>();
+
+		if( mode.equals( "driver" ) && maybeDriver.isPresent() ){
+			bookings = repository.findByDriver( maybeDriver.orElseGet(null) );
+		}
+
+		if( mode.equals( "passenger" ) && maybePassenger.isPresent() ){
+			bookings = repository.findByPassenger( maybePassenger.orElseGet(null) );
+		}
+
+		bookings = bookings.stream()
+					.sorted(Comparator.comparing(Booking::getCreatedAt))
+					.collect(Collectors.toList());
+					
+		return ResponseEntity.ok( bookings );
 	}
 }
