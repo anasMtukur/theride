@@ -30,8 +30,8 @@ public class DistanceCalculatorService {
 												.origin(new LatLng(startLat, startLon))
 												.destination(new LatLng(endLat, endLon))
 												.mode(TravelMode.DRIVING);
-		System.out.println( "From: " + startLat + ", " + startLon );
-		System.out.println( "To: " + endLat + ", " + endLon );
+		//System.out.println( "From: " + startLat + ", " + startLon );
+		//System.out.println( "To: " + endLat + ", " + endLon );
 		Map<DirectionsRoute, Double> routeDistance = new HashMap<>();
 		LinkedHashMap<DirectionsRoute, Double> sortedRouteDistance = new LinkedHashMap<>();
 		ArrayList<Double> list = new ArrayList<>();

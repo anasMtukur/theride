@@ -128,10 +128,10 @@ public class BookingController {
 				.filter( point -> point.getPointType().equals( BookingPointType.PICKUP ))
 				.collect(Collectors.toList()).get(0);
 			
-			System.out.println( booking.getGeoHashZone() );
+			//System.out.println( booking.getGeoHashZone() );
 
 			drivers = lastKnownLocationRepository.findByLocationGeoHashZone( booking.getGeoHashZone() );
-			System.out.println( drivers.size() );
+			//System.out.println( drivers.size() );
 			drivers = drivers.stream()
 								.map((d) -> assignDriverService.calculateRoadDistance(d, pickup))
 								.sorted(Comparator.comparing(LastKnownLocation::getDistance))
@@ -142,7 +142,6 @@ public class BookingController {
 	}
 
 	@PostMapping
-	//@SendTo("/" +TOPIC+ "/incoming-bookings")
 	@SendTo("/incoming-bookings")
 	public Booking add(
 			Principal principal,
@@ -184,6 +183,7 @@ public class BookingController {
 			pickup.setLatitude( String.valueOf(payload.getPickupLatitude()) );
 			pickup.setLongitude( String.valueOf(payload.getPickupLongitude()) );
 			pickup.setGeoHashZone(pickupGeoHash);
+			pickup.setAddress( payload.getPickupAddress() );
 
 			BookingPoint dropoff = new BookingPoint();
 			String dropOffGeoHash = locationService.generateGeoHash( payload.getDropOffLatitude(), payload.getDropOffLongitude() );
@@ -193,6 +193,7 @@ public class BookingController {
 			dropoff.setLatitude( String.valueOf(payload.getDropOffLatitude()) );
 			dropoff.setLongitude( String.valueOf(payload.getDropOffLongitude()) );
 			dropoff.setGeoHashZone(dropOffGeoHash);
+			dropoff.setAddress( payload.getDropOffAddress() );
 
 			points.add(pickup);
 			points.add(dropoff);
@@ -216,7 +217,7 @@ public class BookingController {
 			@Valid @RequestBody FindByLocationPayload payload) throws Exception {
 		
 		String geoHash = locationService.generateGeoHash( payload.getLatitude(), payload.getLongitude() );
-		System.out.println( geoHash );
+		//System.out.println( geoHash );
 		List<Booking> response = repository.findByGeoHashZoneAndBookingStatus( geoHash );
 		
 		return ResponseEntity.ok( response );
@@ -239,7 +240,7 @@ public class BookingController {
 			booking.setDriver(driver);
 		}
 
-		System.out.println( driver.getId() + "" + booking.getDriver().getId() );
+		//System.out.println( driver.getId() + "" + booking.getDriver().getId() );
 		if( !driver.getId().equals( booking.getDriver().getId() ) ){
 			throw new RuntimeException( "Driver is not assigned to ride!" );
 		}

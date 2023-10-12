@@ -11,8 +11,10 @@ import lombok.Data;
 public class NewBookingPayload {
 	private double pickupLatitude;
 	private double pickupLongitude;
+	private String pickupAddress;
 	private double dropOffLatitude;
 	private double dropOffLongitude;
+	private String dropOffAddress;
 	private String bookingType;
 
 }

@@ -42,4 +42,9 @@ public class BookingPoint  extends AuditEntity{
 	@Size(min = 1, max = 255)
 	@Column(name = "geo_hash_zone")
     private String geoHashZone;
+
+	@NotNull
+	@Size(min = 1, max = 255)
+	@Column(name = "address")
+    private String address;
 }

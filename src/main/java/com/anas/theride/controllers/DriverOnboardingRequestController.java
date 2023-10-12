@@ -69,7 +69,6 @@ public class DriverOnboardingRequestController {
 			Principal principal,
 			@Valid @RequestBody DriverOnboardingRequestPayload payload ) throws Exception {
 		
-		System.out.println( principal.getName() );
 		EndUser requestingUser = endUserRepository.findByUsername( principal.getName() );
 		
 		//Check if user already has driver role
@@ -92,7 +91,7 @@ public class DriverOnboardingRequestController {
 
 		String[] names = requestingUser.getFullName().split(" ");
 		Driver entity = new Driver(); 
-		System.out.println( payload.getGender() + " === " + Gender.valueOf( payload.getGender() ) );
+		
 		entity.setActiveCity( payload.getCity() );
 		entity.setEndUser( requestingUser );
 		entity.setFirstName( names[0] );
@@ -132,11 +131,6 @@ public class DriverOnboardingRequestController {
 		PagedPayload<Driver> response = new PagedPayload<Driver>();
 		PageRequest pageRequest = PagingUtil.getPageRequestObject( pageNumber, pageSize, sortBy, sortDirection );
 		Page<Driver> pageData = driverRepository.findByApprovalStatus( DriverApprovalStatus.PENDING, pageRequest );
-		
-		/* List<Payload> payloads = pageData.getContent()
-				.stream()
-				.map((p) -> service.fromEndUser(p))
-				.collect( Collectors.toList() ); */
         
 		response.setTotalPages( pageData.getTotalPages() );
 		response.setTotalElements( pageData.getTotalElements() );
