@@ -49,6 +49,9 @@ import lombok.Setter;
 @Entity
 @Table(name = "drivers")
 public class Driver  extends AuditEntity{
+	public Driver(UUID id){
+		this.id = id;
+	}
 	@JoinColumn(name = "end_user", referencedColumnName = "id")
     @OneToOne(optional = false)
 	@JsonIgnore

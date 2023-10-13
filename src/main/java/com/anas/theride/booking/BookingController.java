@@ -143,7 +143,7 @@ public class BookingController {
 
 	@PostMapping
 	@SendTo("/incoming-bookings")
-	public Booking add(
+	public ResponseEntity<Booking> add(
 			Principal principal,
 			@Valid @RequestBody NewBookingPayload payload ) throws Exception {
 		EndUser requestingUser = endUserRepository.findByUsername( principal.getName() );
@@ -157,14 +157,14 @@ public class BookingController {
 			passenger.setFirstName( names[0] );
 			passenger.setLastName( names[1] );
 			passenger.setGender( Gender.MALE );
-			passengerRepository.saveAndFlush( passenger );
+			passenger = passengerRepository.saveAndFlush( passenger );
 
 			if( passenger.getId() == null ){
 				throw new RuntimeException("Failed to start a passenger account");
 			}
 
 		}
-
+		System.out.println(payload.getBookingType());
 		String pickupGeoHash = locationService.generateGeoHash( payload.getPickupLatitude(), payload.getPickupLongitude() );
 		Booking entity = new Booking();
 		entity.setPassenger( passenger );
@@ -208,7 +208,7 @@ public class BookingController {
 
 		messagingTemplate.convertAndSend("/incoming-bookings", entity);
 
-		return entity;
+		return ResponseEntity.ok( entity );
 	}
 
 	@PostMapping( value="/zone", produces = MediaType.APPLICATION_JSON_VALUE )

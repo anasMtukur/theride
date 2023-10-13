@@ -7,5 +7,7 @@
 			"path": "../theride-client"
 		}
 	],
-	"settings": {}
+	"settings": {
+		"java.configuration.updateBuildConfiguration": "automatic"
+	}
 }
