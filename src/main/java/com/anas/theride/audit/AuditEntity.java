@@ -39,7 +39,7 @@ public abstract class AuditEntity implements Serializable {
   @NotNull
   @Column(name = "id")
   @GeneratedValue(strategy = GenerationType.AUTO)
-  private UUID id;
+  protected UUID id;
 
   @PrePersist
   protected void onCreate() {
